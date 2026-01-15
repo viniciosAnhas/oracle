@@ -12,3 +12,12 @@ shutdown immediate
 
 -- Inicia a instância Oracle, monta o banco de dados e o abre para uso normal.
 startup
+
+-- Retorna informações do CDB (Container Database) raiz. O con_id = 1 sempre se refere ao container raiz do CDB, que é o banco de dados "mestre" que contém todos os PDBs.
+SELECT con_id, dbid, name FROM v$containers WHERE con_id = 1;
+
+-- Exibe o nome do container (CDB ou PDB) no qual a sessão atual está conectada.
+show con_name;
+
+-- Lista os nomes de todos os PDBs (pluggable databases) existentes dentro do CDB.
+SELECT name FROM v$pdbs;
