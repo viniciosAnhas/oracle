@@ -42,3 +42,21 @@ REVOKE CREATE TABLE FROM C##DEVOPS container=current;
 
 -- Muda o contexto da sessão atual para o PDB chamado "ORCLPDB", permitindo trabalhar dentro desse banco de dados plugável específico.
 ALTER SESSION SET container=ORCLPDB;
+
+-- Mostra o modo de abertura do banco de dados.
+-- READ WRITE: Banco aberto para leitura e escrita.
+-- READ ONLY: Banco aberto apenas para leitura.
+-- MOUNTED: Banco montado, mas não aberto (acesso restrito a DBA).
+-- READ WRITE WITH APPLY: Banco físico standby aplicando logs (Data Guard).
+-- READ ONLY WITH APPLY: Banco lógico standby aplicando logs.
+SELECT open_mode FROM v$database;
+
+-- Mostra o estado atual da instância Oracle.
+-- OPEN: Instância iniciada e banco de dados aberto normalmente.
+-- MOUNTED: Instância montou o banco, mas ele ainda não está aberto para usuários.
+-- STARTED: Instância iniciada, mas banco ainda não montado (após STARTUP NOMOUNT).
+-- OPEN MIGRATE: Em processo de upgrade/downgrade do banco.
+SELECT status FROM v$instance;
+
+-- Abre o PDB chamado "ORCLPDB", deixando-o disponível para conexões e operações normais.
+ALTER pluggable DATABASE ORCLPDB open;
