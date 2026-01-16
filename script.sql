@@ -87,3 +87,12 @@ CREATE pluggable DATABASE pdb2 FROM pdb1;
 
 -- Remove permanentemente o PDB "pdb2" e exclui seus arquivos de dados físicos do sistema operacional.
 DROP pluggable DATABASE pdb2 including datafiles;
+
+-- Cria um usuário chamado "TI" com a senha "senhaTI" no container atual.
+CREATE user TI identified BY senhaTI;
+
+-- Concede os papéis (roles) CONNECT (permissão para conectar) e RESOURCE (permite criar objetos como tabelas, índices, procedures) ao usuário TI.
+GRANT CONNECT, RESOURCE TO TI;
+
+-- Confirma (torna permanentes) todas as alterações feitas na transação atual.
+COMMIT;
