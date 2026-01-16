@@ -60,3 +60,30 @@ SELECT status FROM v$instance;
 
 -- Abre o PDB chamado "ORCLPDB", deixando-o disponível para conexões e operações normais.
 ALTER pluggable DATABASE ORCLPDB open;
+
+--  Define o diretório padrão para criação de arquivos de dados do banco (ex: novos PDBs/tablespaces) tanto em memória quanto no arquivo de parâmetros.
+ALTER SYSTEM SET db_create_file_dest='C:\app\pdbs' scope=both;
+
+-- Lista todos os parâmetros de inicialização do Oracle que contêm a palavra "CREATE" (como db_create_file_dest, db_create_online_log_dest_N, etc.) e seus valores atuais.
+show parameter CREATE;
+
+-- Cria um novo PDB chamado "pdb1" com um usuário administrador "admin" (senha: benvindo1) e limita o armazenamento máximo a 2 GB.
+CREATE pluggable DATABASE pdb1 ADMIN user admin identified BY benvindo1 storage(maxsize 2G);
+
+-- Muda a sessão para o container raiz (CDB).
+ALTER SESSION SET container=CDB$ROOT;
+
+-- Fecha o PDB pdb1 imediatamente, desconectando sessões ativas.
+ALTER pluggable DATABASE pdb1 CLOSE IMMEDIATE;
+
+-- Reabre o PDB pdb1 apenas em modo de leitura.
+ALTER pluggable DATABASE pdb1 OPEN READ ONLY;
+
+-- Lista todos os PDBs com seus nomes e modos de abertura (ex: READ WRITE, READ ONLY, MOUNTED).
+SELECT name, open_mode FROM v$pdbs;
+
+-- Cria um novo PDB chamado "pdb2" clonando a estrutura e os dados do PDB "pdb1" (origem). O pdb1 deve estar aberto em modo read-only ou aberto normalmente para isso.
+CREATE pluggable DATABASE pdb2 FROM pdb1;
+
+-- Remove permanentemente o PDB "pdb2" e exclui seus arquivos de dados físicos do sistema operacional.
+DROP pluggable DATABASE pdb2 including datafiles;
