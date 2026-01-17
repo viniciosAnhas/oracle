@@ -96,3 +96,9 @@ GRANT CONNECT, RESOURCE TO TI;
 
 -- Confirma (torna permanentes) todas as alterações feitas na transação atual.
 COMMIT;
+
+-- Consulta o usuário 'TI' na visão DBA_USERS, mostrando seu nome e status da conta
+SELECT username, account_status FROM dba_users WHERE username = 'TI';
+
+-- Concede todos os privilégios do sistema (como CREATE TABLE, CREATE VIEW, DROP ANY TABLE, etc.) ao usuário TI, tornando-o poderoso equivalente a um DBA. Cuidado: Isso dá controle total sobre o container atual.
+GRANT all privileges TO TI;
