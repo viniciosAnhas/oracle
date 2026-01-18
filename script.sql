@@ -102,3 +102,6 @@ SELECT username, account_status FROM dba_users WHERE username = 'TI';
 
 -- Concede todos os privilégios do sistema (como CREATE TABLE, CREATE VIEW, DROP ANY TABLE, etc.) ao usuário TI, tornando-o poderoso equivalente a um DBA. Cuidado: Isso dá controle total sobre o container atual.
 GRANT all privileges TO TI;
+
+-- Concede ao usuário TI a permissão de ler (SELECT) qualquer tabela de qualquer esquema (exceto SYS) no container atual (CDB ou PDB).
+GRANT SELECT any TABLE TO 'TI';
