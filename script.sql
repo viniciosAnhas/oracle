@@ -105,3 +105,6 @@ GRANT all privileges TO TI;
 
 -- Concede ao usuário TI a permissão de ler (SELECT) qualquer tabela de qualquer esquema (exceto SYS) no container atual (CDB ou PDB).
 GRANT SELECT any TABLE TO 'TI';
+
+-- Concede permissão para o usuário ANHAS realizar consultas (SELECT) na tabela CLIENTE que pertence ao usuário (esquema) TI.
+GRANT SELECT ON TI.CLIENTE TO ANHAS;
