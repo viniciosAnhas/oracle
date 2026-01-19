@@ -108,3 +108,9 @@ GRANT SELECT any TABLE TO 'TI';
 
 -- Concede permissão para o usuário ANHAS realizar consultas (SELECT) na tabela CLIENTE que pertence ao usuário (esquema) TI.
 GRANT SELECT ON TI.CLIENTE TO ANHAS;
+
+-- Apresenta se o autocommit esta ativo
+show autocommit;
+
+-- Ativa o commit automático no SQL*Plus/SQLcl. Cada comando DML (INSERT, UPDATE, DELETE, MERGE) é confirmado permanentemente no banco imediatamente após sua execução bem-sucedida.
+SET autocommit ON;
