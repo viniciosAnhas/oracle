@@ -114,3 +114,12 @@ show autocommit;
 
 -- Ativa o commit automático no SQL*Plus/SQLcl. Cada comando DML (INSERT, UPDATE, DELETE, MERGE) é confirmado permanentemente no banco imediatamente após sua execução bem-sucedida.
 SET autocommit ON;
+
+-- Lista todas as roles (papéis/ permissões agrupadas) existentes no banco de dados, mostrando nome, se é role padrão do Oracle, etc.
+SELECT * FROM dba_roles;
+
+-- Cria uma nova role chamada "devops" no banco de dados. Uma role é um conjunto de privilégios que pode ser concedido a usuários.
+CREATE ROLE devops;
+
+-- Lista todas as roles personalizadas (não mantidas pelo Oracle) criadas por usuários ou DBAs.
+SELECT * FROM dba_roles WHERE oracle_maintained = 'N';
