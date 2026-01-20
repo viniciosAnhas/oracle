@@ -123,3 +123,12 @@ CREATE ROLE devops;
 
 -- Lista todas as roles personalizadas (não mantidas pelo Oracle) criadas por usuários ou DBAs.
 SELECT * FROM dba_roles WHERE oracle_maintained = 'N';
+
+-- Concede ao usuário TI o papel SYSDBA, que é o mais alto privilégio administrativo do Oracle. Permite ligar/desligar o banco, criar/alterar estruturas críticas e acessar qualquer dado.
+GRANT sysdba TO TI;
+
+-- Verifica se o usuário TI está listado no arquivo de senhas externo (password file) e mostra quais privilégios de administração (como SYSDBA, SYSOPER) ele possui.
+SELECT * FROM v$pwfile_users WHERE username = 'TI';
+
+-- Remove o papel de SYSDBA do usuario TI.
+REVOKE sysdba FROM TI;
