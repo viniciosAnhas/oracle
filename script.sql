@@ -149,8 +149,21 @@ SELECT * FROM dba_role_privs;
 SELECT
     r.role AS role_name,
     rp.grantee AS user_name
-FROM dba_roles r
-JOIN dba_role_privs rp
-ON
-r.role = rp.granted_role
-ORDER BY role_name, user_name;
+    FROM dba_roles r
+        JOIN dba_role_privs rp
+        ON
+        r.role = rp.granted_role
+        ORDER BY role_name, user_name;
+
+-- Lista todos os privilégios de sistema concedidos diretamente ao usuário SYS (o superusuário do Oracle), ordenados alfabeticamente pelo nome do privilégio.
+SELECT
+    grantee AS user_name,
+    privilege
+    FROM dba_sys_privs
+        WHERE grantee = 'SYS' ORDER BY privilege;
+
+-- Define uma cota de 10 MB de espaço em disco no tablespace USERS para o usuário livraria, limitando quanto ele pode armazenar ali.
+ALTER USER livraria QUOTA 10M ON USERS;
+
+-- Define cota ilimitada de espaço no tablespace USERS para o usuário livraria, permitindo que ele use todo o espaço disponível nesse tablespace sem restrições.
+ALTER USER livraria QUOTA UNLIMITED ON USERS;
