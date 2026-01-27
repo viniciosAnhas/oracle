@@ -132,3 +132,25 @@ SELECT * FROM v$pwfile_users WHERE username = 'TI';
 
 -- Remove o papel de SYSDBA do usuario TI.
 REVOKE sysdba FROM TI;
+
+-- Lista todos os privilégios de sistema concedidos a usuários e roles no banco de dados, mostrando quem recebeu, qual privilégio e se pode repassar (ADMIN_OPTION).
+SELECT * FROM dba_sys_privs;
+
+-- Mostra todos os usuários com privilégios administrativos especiais (SYSDBA, SYSOPER, SYSASM, etc.) registrados no arquivo de senhas externo do Oracle, permitindo conexão quando o banco está fechado.
+SELECT * FROM v$pwfile_users;
+
+-- Lista todos os privilégios de objeto (tabela, view, etc.) concedidos a usuários e roles, mostrando dono do objeto, nome do objeto, tipo, quem recebeu o privilégio e qual permissão (SELECT, INSERT, UPDATE, DELETE, etc.).
+SELECT * FROM dba_tab_privs;
+
+--  Lista todas as roles concedidas a usuários e a outras roles, mostrando quem recebeu, qual role foi concedida e se pode repassar (ADMIN_OPTION).
+SELECT * FROM dba_role_privs;
+
+-- Lista todas as roles e os usuários que as possuem, relacionando o nome da role (dba_roles.role) com o nome do usuário/role que a recebeu (dba_role_privs.grantee), ordenado por role e depois por usuário.
+SELECT
+    r.role AS role_name,
+    rp.grantee AS user_name
+FROM dba_roles r
+JOIN dba_role_privs rp
+ON
+r.role = rp.granted_role
+ORDER BY role_name, user_name;
