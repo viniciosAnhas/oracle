@@ -167,3 +167,13 @@ ALTER USER livraria QUOTA 10M ON USERS;
 
 -- Define cota ilimitada de espaço no tablespace USERS para o usuário livraria, permitindo que ele use todo o espaço disponível nesse tablespace sem restrições.
 ALTER USER livraria QUOTA UNLIMITED ON USERS;
+
+-- Gera comandos GRANT para conceder permissões de SELECT, UPDATE, DELETE, INSERT em todas as tabelas do próprio usuário LIVRARIA para o usuário LIVRARIA (autoconcessão, geralmente desnecessária, pois o dono já tem todos os privilégios sobre suas próprias tabelas).
+SELECT
+    'GRANT SELECT, UPDATE, DELETE, INSERT ON'
+    || x.owner || '.' || x.table_name || ' TO LIVRARIA;'
+    FROM all_tables x
+        WHERE x.owner = 'LIVRARIA';
+
+-- Lista todos os privilégios de objeto (tabela, view, etc.) concedidos a roles, mostrando qual role recebeu, dono do objeto, nome do objeto, tipo de objeto e privilégios (SELECT, INSERT, UPDATE, DELETE, etc.).
+SELECT * FROM role_tab_privs;
