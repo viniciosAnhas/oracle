@@ -177,3 +177,10 @@ SELECT
 
 -- Lista todos os privilégios de objeto (tabela, view, etc.) concedidos a roles, mostrando qual role recebeu, dono do objeto, nome do objeto, tipo de objeto e privilégios (SELECT, INSERT, UPDATE, DELETE, etc.).
 SELECT * FROM role_tab_privs;
+
+-- Mostra uso de cota de tablespace por usuário, incluindo usuário, tablespace, espaço máximo permitido (cota) em MB (NULL se ilimitado) e espaço efetivamente usado em MB, porem só lista usuários com quota definida em algum tablespace.
+SELECT
+    username, tablespace_name, 
+    max_bytes/1024/1024 alocadoMB,
+    bytes /1024/1024 usado_MB
+    FROM dba_ts_quotas;
