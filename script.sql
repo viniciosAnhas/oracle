@@ -184,3 +184,17 @@ SELECT
     max_bytes/1024/1024 alocadoMB,
     bytes /1024/1024 usado_MB
     FROM dba_ts_quotas;
+
+-- Cria um tablespace chamado tablespace_clientes_loja com arquivo físico em /home/oracle/clientestables/tbsclientes_loja.dbf, tamanho inicial 100 MB, crescimento automático de 10 MB quando necessário, até 500 MB máximo.
+CREATE tablespace tablespace_clientes_loja datafile '/home/oracle/clientestables/tbsclientes_loja.dbf' SIZE 100M autoextend ON NEXT 10M maxsize 500M;
+
+-- Cria a tabela TABELA1 no esquema CLIENTE, armazenando seus dados fisicamente no tablespace tablespace_clientes_loja (e não no tablespace padrão do usuário).
+CREATE TABLE CLIENTE.TABELA1(
+
+    ID INT,
+    NOME VARCHAR2(2)
+
+) tablespace tablespace_clientes_loja;
+
+-- Lista todas as tabelas do banco com seus nomes e os tablespaces onde estão armazenadas fisicamente.
+SELECT table_name, tablespace_name FROM dba_tables;
