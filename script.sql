@@ -198,3 +198,16 @@ CREATE TABLE CLIENTE.TABELA1(
 
 -- Lista todas as tabelas do banco com seus nomes e os tablespaces onde estão armazenadas fisicamente.
 SELECT table_name, tablespace_name FROM dba_tables;
+
+-- Lista todos os usuários do banco e seus tablespaces padrão (onde os objetos são criados se nenhum tablespace for especificado).
+SELECT username, default_tablespace FROM dba_users;
+
+-- Define a largura da linha de exibição no SQL*Plus/SQLcl para 100 caracteres, evitando quebra de linha indesejada em resultados de consultas largas.
+SET linesize 100
+
+-- Define o número de linhas por página no SQL*Plus/SQLcl para 100 antes de repetir os cabeçalhos das colunas. Útil para controlar a paginação de saídas longas.
+SET pagesize 100
+
+-- Move fisicamente a tabela AUTOR do esquema LIVRARIA para o tablespace tbspace_users_livraria sem bloquear operações DML (INSERT/UPDATE/DELETE) durante o movimento (online).
+ALTER TABLE LIVRARIA.AUTOR MOVE ONLINE TABLESPACE tbspace_users_livraria;
+
