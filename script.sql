@@ -211,3 +211,15 @@ SET pagesize 100
 -- Move fisicamente a tabela AUTOR do esquema LIVRARIA para o tablespace tbspace_users_livraria sem bloquear operações DML (INSERT/UPDATE/DELETE) durante o movimento (online).
 ALTER TABLE LIVRARIA.AUTOR MOVE ONLINE TABLESPACE tbspace_users_livraria;
 
+-- Move fisicamente a tabela AUTOR para o tablespace tbspace_users_livraria de forma online e usando paralelismo de grau 4 (4 processos trabalhando simultaneamente) para maior velocidade.
+ALTER TABLE LIVRARIA.AUTOR MOVE ONLINE TABLESPACE tbspace_users_livraria PARALLEL 4;
+
+-- Move a tabela AUTOR para outro tablespace de forma online, com paralelismo 4 e aplicando compressão nos dados para economizar espaço.
+ALTER TABLE LIVRARIA.AUTOR MOVE ONLINE TABLESPACE tbspace_users_livraria PARALLEL 4 COMPRESS;
+
+-- Lista todas as tabelas, mostrando nome, tablespace onde estão e tipo de compressão
+SELECT table_name, tablespace_name, compression FROM dba_tables;
+
+-- Move a tabela AUTOR para outro tablespace de forma online, com paralelismo 4, sem compressão
+ALTER TABLE LIVRARIA.AUTOR MOVE ONLINE TABLESPACE tbspace_users_livraria PARALLEL 4 NOCOMPRESS;
+
