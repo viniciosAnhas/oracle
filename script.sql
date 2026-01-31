@@ -223,3 +223,13 @@ SELECT table_name, tablespace_name, compression FROM dba_tables;
 -- Move a tabela AUTOR para outro tablespace de forma online, com paralelismo 4, sem compressão
 ALTER TABLE LIVRARIA.AUTOR MOVE ONLINE TABLESPACE tbspace_users_livraria PARALLEL 4 NOCOMPRESS;
 
+-- Altera o usuário ANHAS definindo tablespace padrão como tbspace_users_livraria e cota ilimitada nesse tablespace
+ALTER USER ANHAS
+DEFAULT TABLESPACE tbspace_users_livraria
+QUOTA UNLIMITED ON tbspace_users_livraria;
+
+-- Remove o tablespace
+DROP TABLESPACE tbspace_users_livraria;
+
+-- Remove o tablespace, todos os objetos dentro dele
+DROP TABLESPACE tbspace_users_livraria INCLUDING CONTENTS;
