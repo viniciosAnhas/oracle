@@ -5,7 +5,10 @@ lsnrctl status
 lsnrctl start
 
 -- Mostra o nome e o estado (ex: OPEN, MOUNTED) da instância do banco de dados atual.
-SELECT instance_name, status FROM v$instance;
+SELECT 
+    instance_name, 
+    status 
+    FROM v$instance;
 
 -- Desliga o banco de dados imediatamente, desconectando sessões, revertendo transações pendentes e fechando os arquivos de forma limpa.
 shutdown immediate
@@ -14,13 +17,20 @@ shutdown immediate
 startup
 
 -- Retorna informações do CDB (Container Database) raiz. O con_id = 1 sempre se refere ao container raiz do CDB, que é o banco de dados "mestre" que contém todos os PDBs.
-SELECT con_id, dbid, name FROM v$containers WHERE con_id = 1;
+SELECT 
+    con_id, 
+    dbid, 
+    name 
+    FROM v$containers 
+        WHERE con_id = 1;
 
 -- Exibe o nome do container (CDB ou PDB) no qual a sessão atual está conectada.
 show con_name;
 
 -- Lista os nomes de todos os PDBs (pluggable databases) existentes dentro do CDB.
-SELECT name FROM v$pdbs;
+SELECT 
+    name 
+    FROM v$pdbs;
 
 -- Cria um usuário comum (common user) visível em todos os containers (CDB e todos os PDBs).
 CREATE USER C##DEVOPS identified by "dev123" container=all;
@@ -49,14 +59,18 @@ ALTER SESSION SET container=ORCLPDB;
 -- MOUNTED: Banco montado, mas não aberto (acesso restrito a DBA).
 -- READ WRITE WITH APPLY: Banco físico standby aplicando logs (Data Guard).
 -- READ ONLY WITH APPLY: Banco lógico standby aplicando logs.
-SELECT open_mode FROM v$database;
+SELECT 
+    open_mode 
+    FROM v$database;
 
 -- Mostra o estado atual da instância Oracle.
 -- OPEN: Instância iniciada e banco de dados aberto normalmente.
 -- MOUNTED: Instância montou o banco, mas ele ainda não está aberto para usuários.
 -- STARTED: Instância iniciada, mas banco ainda não montado (após STARTUP NOMOUNT).
 -- OPEN MIGRATE: Em processo de upgrade/downgrade do banco.
-SELECT status FROM v$instance;
+SELECT 
+    status 
+    FROM v$instance;
 
 -- Abre o PDB chamado "ORCLPDB", deixando-o disponível para conexões e operações normais.
 ALTER pluggable DATABASE ORCLPDB open;
@@ -68,7 +82,9 @@ ALTER SYSTEM SET db_create_file_dest='C:\app\pdbs' scope=both;
 show parameter CREATE;
 
 -- Cria um novo PDB chamado "pdb1" com um usuário administrador "admin" (senha: benvindo1) e limita o armazenamento máximo a 2 GB.
-CREATE pluggable DATABASE pdb1 ADMIN user admin identified BY benvindo1 storage(maxsize 2G);
+CREATE pluggable DATABASE pdb1 
+ADMIN user admin identified BY benvindo1 
+storage(maxsize 2G);
 
 -- Muda a sessão para o container raiz (CDB).
 ALTER SESSION SET container=CDB$ROOT;
@@ -98,7 +114,11 @@ GRANT CONNECT, RESOURCE TO TI;
 COMMIT;
 
 -- Consulta o usuário 'TI' na visão DBA_USERS, mostrando seu nome e status da conta
-SELECT username, account_status FROM dba_users WHERE username = 'TI';
+SELECT 
+    username, 
+    account_status 
+    FROM dba_users 
+        WHERE username = 'TI';
 
 -- Concede todos os privilégios do sistema (como CREATE TABLE, CREATE VIEW, DROP ANY TABLE, etc.) ao usuário TI, tornando-o poderoso equivalente a um DBA. Cuidado: Isso dá controle total sobre o container atual.
 GRANT all privileges TO TI;
@@ -122,28 +142,42 @@ SELECT * FROM dba_roles;
 CREATE ROLE devops;
 
 -- Lista todas as roles personalizadas (não mantidas pelo Oracle) criadas por usuários ou DBAs.
-SELECT * FROM dba_roles WHERE oracle_maintained = 'N';
+SELECT 
+    * 
+    FROM dba_roles 
+        WHERE oracle_maintained = 'N';
 
 -- Concede ao usuário TI o papel SYSDBA, que é o mais alto privilégio administrativo do Oracle. Permite ligar/desligar o banco, criar/alterar estruturas críticas e acessar qualquer dado.
 GRANT sysdba TO TI;
 
 -- Verifica se o usuário TI está listado no arquivo de senhas externo (password file) e mostra quais privilégios de administração (como SYSDBA, SYSOPER) ele possui.
-SELECT * FROM v$pwfile_users WHERE username = 'TI';
+SELECT 
+    * 
+    FROM v$pwfile_users 
+        WHERE username = 'TI';
 
 -- Remove o papel de SYSDBA do usuario TI.
 REVOKE sysdba FROM TI;
 
 -- Lista todos os privilégios de sistema concedidos a usuários e roles no banco de dados, mostrando quem recebeu, qual privilégio e se pode repassar (ADMIN_OPTION).
-SELECT * FROM dba_sys_privs;
+SELECT 
+    * 
+    FROM dba_sys_privs;
 
 -- Mostra todos os usuários com privilégios administrativos especiais (SYSDBA, SYSOPER, SYSASM, etc.) registrados no arquivo de senhas externo do Oracle, permitindo conexão quando o banco está fechado.
-SELECT * FROM v$pwfile_users;
+SELECT 
+    * 
+    FROM v$pwfile_users;
 
 -- Lista todos os privilégios de objeto (tabela, view, etc.) concedidos a usuários e roles, mostrando dono do objeto, nome do objeto, tipo, quem recebeu o privilégio e qual permissão (SELECT, INSERT, UPDATE, DELETE, etc.).
-SELECT * FROM dba_tab_privs;
+SELECT 
+    * 
+    FROM dba_tab_privs;
 
 --  Lista todas as roles concedidas a usuários e a outras roles, mostrando quem recebeu, qual role foi concedida e se pode repassar (ADMIN_OPTION).
-SELECT * FROM dba_role_privs;
+SELECT 
+    * 
+    FROM dba_role_privs;
 
 -- Lista todas as roles e os usuários que as possuem, relacionando o nome da role (dba_roles.role) com o nome do usuário/role que a recebeu (dba_role_privs.grantee), ordenado por role e depois por usuário.
 SELECT
@@ -186,7 +220,9 @@ SELECT
     FROM dba_ts_quotas;
 
 -- Cria um tablespace chamado tablespace_clientes_loja com arquivo físico em /home/oracle/clientestables/tbsclientes_loja.dbf, tamanho inicial 100 MB, crescimento automático de 10 MB quando necessário, até 500 MB máximo.
-CREATE tablespace tablespace_clientes_loja datafile '/home/oracle/clientestables/tbsclientes_loja.dbf' SIZE 100M autoextend ON NEXT 10M maxsize 500M;
+CREATE tablespace tablespace_clientes_loja 
+datafile '/home/oracle/clientestables/tbsclientes_loja.dbf' SIZE 100M 
+autoextend ON NEXT 10M maxsize 500M;
 
 -- Cria a tabela TABELA1 no esquema CLIENTE, armazenando seus dados fisicamente no tablespace tablespace_clientes_loja (e não no tablespace padrão do usuário).
 CREATE TABLE CLIENTE.TABELA1(
@@ -197,10 +233,16 @@ CREATE TABLE CLIENTE.TABELA1(
 ) tablespace tablespace_clientes_loja;
 
 -- Lista todas as tabelas do banco com seus nomes e os tablespaces onde estão armazenadas fisicamente.
-SELECT table_name, tablespace_name FROM dba_tables;
+SELECT 
+    table_name, 
+    tablespace_name 
+    FROM dba_tables;
 
 -- Lista todos os usuários do banco e seus tablespaces padrão (onde os objetos são criados se nenhum tablespace for especificado).
-SELECT username, default_tablespace FROM dba_users;
+SELECT 
+    username, 
+    default_tablespace 
+    FROM dba_users;
 
 -- Define a largura da linha de exibição no SQL*Plus/SQLcl para 100 caracteres, evitando quebra de linha indesejada em resultados de consultas largas.
 SET linesize 100
@@ -209,19 +251,30 @@ SET linesize 100
 SET pagesize 100
 
 -- Move fisicamente a tabela AUTOR do esquema LIVRARIA para o tablespace tbspace_users_livraria sem bloquear operações DML (INSERT/UPDATE/DELETE) durante o movimento (online).
-ALTER TABLE LIVRARIA.AUTOR MOVE ONLINE TABLESPACE tbspace_users_livraria;
+ALTER TABLE LIVRARIA.AUTOR 
+MOVE ONLINE TABLESPACE tbspace_users_livraria;
 
 -- Move fisicamente a tabela AUTOR para o tablespace tbspace_users_livraria de forma online e usando paralelismo de grau 4 (4 processos trabalhando simultaneamente) para maior velocidade.
-ALTER TABLE LIVRARIA.AUTOR MOVE ONLINE TABLESPACE tbspace_users_livraria PARALLEL 4;
+ALTER TABLE LIVRARIA.AUTOR 
+MOVE ONLINE TABLESPACE tbspace_users_livraria 
+PARALLEL 4;
 
 -- Move a tabela AUTOR para outro tablespace de forma online, com paralelismo 4 e aplicando compressão nos dados para economizar espaço.
-ALTER TABLE LIVRARIA.AUTOR MOVE ONLINE TABLESPACE tbspace_users_livraria PARALLEL 4 COMPRESS;
+ALTER TABLE LIVRARIA.AUTOR 
+MOVE ONLINE TABLESPACE tbspace_users_livraria 
+PARALLEL 4 COMPRESS;
 
 -- Lista todas as tabelas, mostrando nome, tablespace onde estão e tipo de compressão
-SELECT table_name, tablespace_name, compression FROM dba_tables;
+SELECT 
+    table_name, 
+    tablespace_name, 
+    compression 
+    FROM dba_tables;
 
 -- Move a tabela AUTOR para outro tablespace de forma online, com paralelismo 4, sem compressão
-ALTER TABLE LIVRARIA.AUTOR MOVE ONLINE TABLESPACE tbspace_users_livraria PARALLEL 4 NOCOMPRESS;
+ALTER TABLE LIVRARIA.AUTOR 
+MOVE ONLINE TABLESPACE tbspace_users_livraria 
+PARALLEL 4 NOCOMPRESS;
 
 -- Altera o usuário ANHAS definindo tablespace padrão como tbspace_users_livraria e cota ilimitada nesse tablespace
 ALTER USER ANHAS
@@ -247,9 +300,11 @@ RENAME DATAFILE '/home/oracle/clientestables/tbsclientes_loja.dbf'
 TO '/home/oracle/clientestables2/tbsclientes_loja.dbf';
 
 -- Lista o(s) arquivo(s) de dados associados ao tablespace especificado.
-SELECT tablespace_name, file_name 
-FROM dba_data_files 
-WHERE tablespace_name = 'TABLESPACE_CLIENTES_LOJA';
+SELECT 
+    tablespace_name, 
+    file_name 
+    FROM dba_data_files 
+        WHERE tablespace_name = 'TABLESPACE_CLIENTES_LOJA';
 
 -- Coloca o tablespace tbspace_users_livraria de volta em modo online, disponibilizando seus dados para acesso normal após ter estado offline.
 ALTER TABLESPACE tbspace_users_livraria ONLINE;
