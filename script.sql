@@ -253,3 +253,21 @@ WHERE tablespace_name = 'TABLESPACE_CLIENTES_LOJA';
 
 -- Coloca o tablespace tbspace_users_livraria de volta em modo online, disponibilizando seus dados para acesso normal após ter estado offline.
 ALTER TABLESPACE tbspace_users_livraria ONLINE;
+
+-- Lista todos os arquivos de dados do banco, mostrando tablespace ao qual pertence, caminho físico do arquivo e Tamanho em MB (convertido de bytes)
+SELECT 
+    TABLESPACE_NAME, 
+    FILE_NAME,
+    TO_CHAR(BYTES/1024/1024) AS SIZE_MB
+    FROM DBA_DATA_FILES;
+
+-- Redimensiona o arquivo de dados físico especificado para 40 MB.
+ALTER DATABASE DATAFILE '/home/oracle/clientestables/tbsclientes_loja.dbf' RESIZE 40M;
+
+-- Calcula o espaço total efetivamente usado por todos os segmentos (tabelas, índices, etc.) em cada tablespace, mostrando o nome do tablespace e a soma do espaço usado em MB (agrupado por tablespace) Ordenado alfabeticamente pelo nome do tablespace.
+SELECT
+    TABLESPACE_NAME,
+    TO_CHAR(SUM(BYTES)/1024/1024) MB
+    FROM DBA_SEGMENTS
+        GROUP BY TABLESPACE_NAME 
+        ORDER BY 1;
