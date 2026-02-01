@@ -326,3 +326,12 @@ SELECT
     FROM DBA_SEGMENTS
         GROUP BY TABLESPACE_NAME 
         ORDER BY 1;
+
+-- Apresenta o calculo por tablespace, allocated_mb: Espaço total alocado (tamanho dos arquivos de dados) em MB e used_mb: Espaço utilizável (excluindo cabeçalhos) em MB, agrupado e ordenado pelo nome do tablespace.
+SELECT 
+    TABLESPACE_NAME,
+    ROUND(SUM(bytes)/1024/1024, 2) AS allocated_mb,
+    ROUND(SUM(user_bytes)/1024/1024, 2) AS used_mb
+    FROM dba_data_files
+        GROUP BY TABLESPACE_NAME
+        ORDER BY TABLESPACE_NAME;
