@@ -233,3 +233,23 @@ DROP TABLESPACE tbspace_users_livraria;
 
 -- Remove o tablespace, todos os objetos dentro dele
 DROP TABLESPACE tbspace_users_livraria INCLUDING CONTENTS;
+
+-- Coloca o tablespace tbspace_users_livraria em modo offline, tornando seus dados temporariamente indisponíveis para usuários (útil para manutenção ou backup).
+ALTER TABLESPACE tbspace_users_livraria OFFLINE;
+
+-- Este comando renomeia/move fisicamente o arquivo de dados do tablespace tbspace_users_livraria.
+-- Tablespace deve estar OFFLINE
+-- Mover/renomear arquivo fisicamente no SO
+-- Executar este comando para atualizar o controle do Oracle
+-- Colocar tablespace ONLINE novamente
+ALTER TABLESPACE tbspace_users_livraria
+RENAME DATAFILE '/home/oracle/clientestables/tbsclientes_loja.dbf'
+TO '/home/oracle/clientestables2/tbsclientes_loja.dbf';
+
+-- Lista o(s) arquivo(s) de dados associados ao tablespace especificado.
+SELECT tablespace_name, file_name 
+FROM dba_data_files 
+WHERE tablespace_name = 'TABLESPACE_CLIENTES_LOJA';
+
+-- Coloca o tablespace tbspace_users_livraria de volta em modo online, disponibilizando seus dados para acesso normal após ter estado offline.
+ALTER TABLESPACE tbspace_users_livraria ONLINE;
