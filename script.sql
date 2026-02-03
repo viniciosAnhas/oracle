@@ -362,3 +362,12 @@ SELECT
 ALTER DATABASE DATAFILE '/home/oracle/clientestables/tbs_big.dbf' 
 RESIZE 40G;
 
+-- Lista todas as tabelas do banco como NNme da tabela, tablespace onde está armazenada e nome do usuário (esquema) dono da tabela relaciona DBA_TABLES com DBA_USERS através do dono (OWNER = USERNAME).
+SELECT
+    T.TABLE_NAME,
+    T.TABLESPACE_NAME,
+    U.USERNAME AS OWNER
+    FROM DBA_TABLES T
+        JOIN DBA_USERS U
+        ON
+        T.OWNER = U.USERNAME;
