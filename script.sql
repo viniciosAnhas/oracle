@@ -335,3 +335,30 @@ SELECT
     FROM dba_data_files
         GROUP BY TABLESPACE_NAME
         ORDER BY TABLESPACE_NAME;
+
+-- Lista todos os tablespaces
+SELECT 
+    TABLESPACE_NAME,
+    CONTENTS,
+    BIGFILE
+    FROM DBA_TABLESPACES;
+
+-- Cria um tablespace Bigfile (suporta um único arquivo enorme, até 128 TB) chamado tbs_big, com arquivo de 32 GB no caminho especificado.
+CREATE BIGFILE TABLESPACE tbs_big
+DATAFILE '/home/oracle/clientestables/tbs_big.dbf' SIZE 32G;
+
+-- Mostra por tablespace: espaço usado em GB, tamanho máximo em GB e se tem autoextensão habilitada.
+SELECT
+    TABLESPACE_NAME,
+    ROUND(SUM(BYTES)/(1024*1024*1024),2) SUM_GB,
+    ROUND(MAXBYTES/(1024*1024*1024),2) MAX_GB,
+    AUTOEXTENSIBLE
+    FROM DBA_DATA_FILES
+        GROUP BY TABLESPACE_NAME, 
+        MAXBYTES, 
+        AUTOEXTENSIBLE;
+
+-- Redimensiona o arquivo único do Bigfile tablespace para 40 GB.
+ALTER DATABASE DATAFILE '/home/oracle/clientestables/tbs_big.dbf' 
+RESIZE 40G;
+
