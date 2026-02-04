@@ -371,3 +371,15 @@ SELECT
         JOIN DBA_USERS U
         ON
         T.OWNER = U.USERNAME;
+
+-- Lista arquivos de tablespace temporário (TEMP)
+SELECT
+    TABLESPACE_NAME,
+    FILE_NAME,
+    BYTES/1024/1024 AS MB,
+    STATUS
+    FROM DBA_TEMP_FILES;
+
+-- Redimensiona o arquivo de tablespace temporário especificado para 50 MB.
+ALTER DATABASE TEMPFILE '/opt/oracle/oradata/FREE/temp01.dbf'
+RESIZE 50M;
