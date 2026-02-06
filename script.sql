@@ -383,3 +383,27 @@ SELECT
 -- Redimensiona o arquivo de tablespace temporário especificado para 50 MB.
 ALTER DATABASE TEMPFILE '/opt/oracle/oradata/FREE/temp01.dbf'
 RESIZE 50M;
+
+-- Cria um novo tablespace temporário chamado TEMP2 com arquivo de 50 MB, usado para operações temporárias (sorts, joins) alternativo ao TEMP padrão
+CREATE TEMPORARY TABLESPACE TEMP2
+TEMPFILE '/opt/oracle/oradata/FREE/temp02.dbf'
+SIZE 50M;
+
+-- Habilita autoextensão para o arquivo temporário: cresce 70 MB por vez até 100 MB máximo.
+ALTER DATABASE TEMPFILE '/opt/oracle/oradata/FREE/temp02.dbf'
+AUTOEXTEND ON NEXT 70M MAXSIZE 100M;
+
+-- Habilita autoextensão ilimitada para o arquivo temporário: cresce 70 MB por vez sem limite máximo de tamanho.
+ALTER DATABASE TEMPFILE '/opt/oracle/oradata/FREE/temp02.dbf'
+AUTOEXTEND ON NEXT 70M MAXSIZE UNLIMITED;
+
+-- Lista propriedades do banco relacionadas a tablespaces, como tablespace default permanente, default temporário, default undo, etc.
+SELECT
+    *
+    FROM DATABASE_PROPERTIES
+        WHERE PROPERTY_NAME
+            LIKE '%TABLESPACE%';
+
+-- Define TEMP2 como o tablespace temporário padrão do banco para todos os usuários (substitui o anterior, ex: TEMP).
+ALTER DATABASE DEFAULT
+TEMPORARY TABLESPACE TEMP2;
