@@ -407,3 +407,44 @@ SELECT
 -- Define TEMP2 como o tablespace temporário padrão do banco para todos os usuários (substitui o anterior, ex: TEMP).
 ALTER DATABASE DEFAULT
 TEMPORARY TABLESPACE TEMP2;
+
+-- Lista tablespaces temporários e seus grupos (usados para parallel execution). Se GROUP_NAME for NULL, o tablespace não pertence a um grupo.
+SELECT
+    TABLESPACE_NAME,
+    GROUP_NAME
+    FROM DBA_TABLESPACE_GROUPS;
+
+-- Cria um tablespace temporário chamado TEMP10CLIENTE e o associa ao grupo de tablespaces chamado TEMPGROUPCLIENTE (útil para paralelismo e gerenciamento conjunto).
+CREATE TEMPORARY TABLESPACE TEMP10CLIENTE
+TEMPFILE '/opt/oracle/oradata/FREE/temp10.dbf'
+SIZE 100M TABLESPACE GROUP TEMPGROUPCLIENTE;
+
+-- Lista todos os arquivos de tablespaces temporários, mostrando o nome do tablespace e o caminho completo de cada arquivo temporário.
+SELECT
+    TABLESPACE_NAME,
+    FILE_NAME
+    FROM DBA_TEMP_FILES;
+
+-- Adiciona o tablespace temporário TEMP4 ao grupo de tablespaces chamado TEMPGROUPCLIENTE.
+ALTER TABLESPACE TEMP4
+TABLESPACE GROUP TEMPGROUPCLIENTE;
+
+-- Lista todos os tablespaces
+SELECT
+    TABLESPACE_NAME,
+    CONTENTS,
+    STATUS
+    FROM DBA_TABLESPACES;
+
+-- Relaciona usuários com seus tablespace temporário atribuído ao usuário
+SELECT
+    U.USERNAME,
+    TS.TABLESPACE_NAME
+    FROM DBA_USERS U
+        LEFT JOIN DBA_TEMP_FILES TS
+        ON
+        U.TEMPORARY_TABLESPACE = TS.TABLESPACE_NAME;
+
+-- Define um tablespace temporário específico (não um grupo) para o usuário CLIENTE.
+ALTER USER CLIENTE
+TEMPORARY TABLESPACE TEMPGROUPCLIENTE;
