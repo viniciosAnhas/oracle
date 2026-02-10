@@ -448,3 +448,19 @@ SELECT
 -- Define um tablespace temporário específico (não um grupo) para o usuário CLIENTE.
 ALTER USER CLIENTE
 TEMPORARY TABLESPACE TEMPGROUPCLIENTE;
+
+-- Lista arquivos temporários com tamanho atual e máximo em MB corretos.
+SELECT
+    TABLESPACE_NAME,
+    FILE_NAME,
+    BYTES/1024/1024 AS MB,
+    MAXBYTES/1024/1024 AS MAXMB,
+    STATUS
+    FROM DBA_TEMP_FILES;
+
+--  Coloca o arquivo de tablespace temporário especificado em modo offline (não é uma operação comum; geralmente usado para recuperação).
+ALTER DATABASE TEMPFILE '/opt/oracle/oradata/FREE/temp02.dbf' OFFLINE;
+
+-- Remove permanentemente o arquivo temporário especificado e exclui o arquivo físico do sistema operacional.
+ALTER DATABASE TEMPFILE '/opt/oracle/oradata/FREE/temp02.dbf'
+DROP INCLUDING DATAFILES;
