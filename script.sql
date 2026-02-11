@@ -464,3 +464,7 @@ ALTER DATABASE TEMPFILE '/opt/oracle/oradata/FREE/temp02.dbf' OFFLINE;
 -- Remove permanentemente o arquivo temporário especificado e exclui o arquivo físico do sistema operacional.
 ALTER DATABASE TEMPFILE '/opt/oracle/oradata/FREE/temp02.dbf'
 DROP INCLUDING DATAFILES;
+
+-- Renomeia/move fisicamente um arquivo de banco de dados (dados, undo ou temporário) no controle do Oracle.
+ALTER DATABASE RENAME FILE '/opt/oracle/oradata/FREE/temp02.dbf'
+TO '/opt/oracle/oradata/FREE/CLIENTE_temp02.dbf';
