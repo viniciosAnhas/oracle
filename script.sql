@@ -468,3 +468,32 @@ DROP INCLUDING DATAFILES;
 -- Renomeia/move fisicamente um arquivo de banco de dados (dados, undo ou temporário) no controle do Oracle.
 ALTER DATABASE RENAME FILE '/opt/oracle/oradata/FREE/temp02.dbf'
 TO '/opt/oracle/oradata/FREE/CLIENTE_temp02.dbf';
+
+-- Lista configurações essenciais de cada tablespace:
+SELECT
+    TABLESPACE_NAME,
+    CONTENTS,
+    STATUS,
+    EXTENT_MANAGEMENT,
+    ALLOCATION_TYPE
+    FROM DBA_TABLESPACES;
+
+-- Mostra informações do tablespace UNDO como nome do tablespace undo, caminho físico do(s) arquivo(s) de dados do undo e se o arquivo cresce automaticamente.
+SELECT
+    TABLESPACE_NAME,
+    FILE_NAME,
+    AUTOEXTENSIBLE
+    FROM DBA_DATA_FILES
+        WHERE TABLESPACE_NAME = 'UNDOTBS1';
+
+-- Exibe todos os parâmetros de inicialização relacionados a UNDO (gerenciamento de transações e consistência de leitura).
+SHOW PARAMETER UNDO;
+
+-- Define o tempo de retenção de dados UNDO para 2400 segundos (40 minutos).
+ALTER SYSTEM SET UNDO_RETENTION = 2400;
+
+-- Consulta a visão de desempenho V$PARAMETER para listar todos os parâmetros de inicialização que contêm 'undo' no nome, mostrando valores atuais em memória.
+SELECT
+    *
+    FROM V$PARAMETER
+    WHERE NAME LIKE '%undo%';
