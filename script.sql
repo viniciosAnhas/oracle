@@ -497,3 +497,23 @@ SELECT
     *
     FROM V$PARAMETER
     WHERE NAME LIKE '%undo%';
+
+-- Consulta todos os arquivos de dados de todos os tablespaces UNDO do banco, a consulta principal retorna os arquivos físicos desses tablespaces UNDO, já a subconsulta encontra todos os tablespaces do tipo CONTENTS = 'UNDO'.
+SELECT
+    TABLESPACE_NAME,
+    FILE_NAME,
+    AUTOEXTENSIBLE
+    FROM DBA_DATA_FILES
+        WHERE TABLESPACE_NAME N
+            (
+                SELECT
+                    TABLESPACE_NAME
+                    FROM DBA_TABLESPACE
+                        WHERE CONTENTS = 'UNDO'
+            );
+
+-- Mostra a configuração de retenção UNDO para cada tablespace.
+SELECT
+    TABLESPACE_NAME,
+    RETENTION
+    FROM DBA_TABLESPACES;
