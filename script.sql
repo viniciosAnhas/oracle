@@ -542,3 +542,78 @@ SELECT
     AUTOEXTENSIBLE
     FROM DBA_DATA_FILES
         WHERE TABLESPACE_NAME = 'UNDOTBS1';
+
+-- Lista todos os tablespaces UNDO com seus arquivos individuais e respectivos tamanhos em MB.
+SELECT
+    T.TABLESPACE_NAME,
+    ROUND(SUM(D.BYTES)/1024/1024,2) AS TAMANHO_EM_MB,
+    D.FILE_NAME
+    FROM DBA_TABLESPACES T
+        INNER JOIN DBA_DATA_FILES D
+            ON
+            T.TABLESPACE_NAME = D.TABLESPACE_NAME
+        WHERE T.CONTENTS = 'UNDO'
+        GROUP BY T.TABLESPACE_NAME, D.FILE_NAME;
+
+-- Redimensiona o arquivo de dados especificado para 100 MB.
+ALTER DATABASE DATAFILE '/opt/oracle/oradata/FREE/undotbs01.dbf' RESIZE 100M;
+
+-- Este comando gera um relatório completo de todos os arquivos de dados e temporários com métricas de uso, incluindo um formato especial para visualização em ferramentas como SQL Developer.
+
+-- file_name: Caminho do arquivo
+
+-- tablespace_name: Tablespace ao qual pertence
+
+-- status: Status do arquivo
+
+-- size_mb: Tamanho total em MB
+
+-- used_mb: Espaço efetivamente usado (excluindo espaço livre)
+
+-- gauge: String formatada para gráfico de barra no SQL Developer (SQLDEV:GAUGE:min:max:0:0:percentual)
+
+-- used_percent: Percentual de uso
+
+-- autoextensible: Se cresce automaticamente
+SELECT 
+    df.file_name,
+    df.tablespace_name,
+    df.status,
+    ROUND(df.bytes/1024/1024, 3) AS size_mb,
+    ROUND((df.bytes - NVL(fs.bytes_free, 0))/1024/1024, 3) AS used_mb,
+    'SQLDEV:GAUGE:0:100:0:0:' || 
+    ROUND((df.bytes - NVL(fs.bytes_free, 0))/df.bytes * 100, 2) AS gauge,
+    ROUND((df.bytes - NVL(fs.bytes_free, 0))/df.bytes * 100, 2) AS used_percent,
+    df.autoextensible
+FROM 
+    dba_data_files df
+LEFT JOIN (
+    SELECT 
+        file_id,
+        SUM(bytes) AS bytes_free
+    FROM 
+        dba_free_space
+    GROUP BY 
+        file_id
+) fs ON df.file_id = fs.file_id
+
+UNION ALL
+
+SELECT 
+    tf.file_name,
+    tf.tablespace_name,
+    'ONLINE' AS status,
+    ROUND(tf.bytes/1024/1024, 3) AS size_mb,
+    0 AS used_mb,
+    'SQLDEV:GAUGE:0:100:0:0:0.00' AS gauge,
+    0 AS used_percent,
+    tf.autoextensible
+FROM 
+    dba_temp_files tf
+ORDER BY 
+    file_name;
+
+-- Cria um novo tablespace UNDO chamado UNDOTBS2 com arquivo de 100 MB.
+CREATE UNDO TABLESPACE UNDOTBS2
+DATAFILE '/opt/oracle/oradata/FREE/undotbs02.dbf'
+SIZE 100M;
