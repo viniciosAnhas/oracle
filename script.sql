@@ -517,3 +517,28 @@ SELECT
     TABLESPACE_NAME,
     RETENTION
     FROM DBA_TABLESPACES;
+
+-- NOGUARANTEE (padrão): Oracle pode reaproveitar espaço UNDO se necessário, mesmo que dados ainda sejam necessários para consultas longas (risco de ORA-01555)
+
+-- GUARANTEE: Oracle não reaproveita espaço UNDO até o tempo de retenção expirar, mesmo que isso cause erros por falta de espaço
+
+-- Quando usar GUARANTEE:
+-- Aplicações críticas com consultas longas que não podem falhar com ORA-01555, desde que haja espaço em disco suficiente.
+
+-- Mostra apenas os tablespaces UNDO e sua política de retenção.
+SELECT
+    TABLESPACE_NAME,
+    RETENTION
+    FROM DBA_TABLESPACES
+        WHERE CONTENTS = 'UNDO';
+
+-- Ativa a retenção garantida para o tablespace UNDO, forçando o Oracle a manter os dados UNDO pelo tempo especificado em undo_retention, mesmo que isso cause erros de espaço.
+ALTER TABLESPACE UNDOTBS1 
+RETENTION GUARANTEE;
+
+-- Verifica o(s) arquivo(s) do tablespace UNDOTBS1 e se eles crescem automaticamente.
+SELECT
+    FILE_NAME,
+    AUTOEXTENSIBLE
+    FROM DBA_DATA_FILES
+        WHERE TABLESPACE_NAME = 'UNDOTBS1';
