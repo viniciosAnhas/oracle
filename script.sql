@@ -626,3 +626,14 @@ SELECT
     V$LOGFILE F
         WHERE L.GROUP# = F.GROUP# AND
             L.STATUS = 'CURRENT';
+
+-- Retorna o tamanho recomendado (em MB) para os arquivos de redo log com base na configuração de recovery da instância.
+SELECT
+    OPTIMAL_LOGFILE_SIZE
+    FROM V$INSTANCE_RECOVERY;
+
+-- Verificar tamanho atual dos redo logs
+SELECT 
+    GROUP#,
+    BYTES/1024/1024 AS MB
+    FROM V$LOG;
