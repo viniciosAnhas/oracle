@@ -617,3 +617,12 @@ ORDER BY
 CREATE UNDO TABLESPACE UNDOTBS2
 DATAFILE '/opt/oracle/oradata/FREE/undotbs02.dbf'
 SIZE 100M;
+
+-- Mostra o(s) arquivo(s) físico(s) do redo log atual (CURRENT), ou seja, o grupo de logs que está sendo ativamente escrito pela instância Oracle no momento.
+SELECT
+    MEMBER,
+    L.STATUS
+    FROM V$LOG L,
+    V$LOGFILE F
+        WHERE L.GROUP# = F.GROUP# AND
+            L.STATUS = 'CURRENT';
