@@ -637,3 +637,64 @@ SELECT
     GROUP#,
     BYTES/1024/1024 AS MB
     FROM V$LOG;
+
+-- Lista todas as sessões ativas com transações em andamento, ordenadas da mais recente para a mais antiga (SID decrescente).
+SELECT
+    S.SID,
+    S.SERIAL#,
+    S.USERNAME,
+    S.PROGRAM,
+    T.USED_UBLK,
+    T.USED_UREC
+    FROM V$SESSION S,
+    V$TRANSACTION T
+        WHERE S.TADDR = T.ADDR
+        ORDER BY
+        S.SID DESC, S.SERIAL# DESC;
+
+-- Lista sessões que geraram REDO (logs de transação), ordenadas por volume gerado (do maior para o menor).
+SELECT
+    S.SID,
+    SN.SERIAL#,
+    SN.USERNAME,
+    N.NAME,
+    ROUND(VALUE / 1024 / 1024, 2) redo_mb,
+    SN.STATUS,
+    SN.TYPE
+    FROM V$SESSTAT S
+        JOIN V$STATNAME N
+            ON
+            N.STATISTIC# = S.STATISTIC#
+        JOIN V$SESSION SN
+            ON
+            SN.SID = S.SID
+        WHERE
+            N.NAME LIKE 'redo log'
+            AND
+            S.VALUE <> 0
+            ORDER BY redo_mb DESC;
+
+-- Esta consulta acessa tabelas internas do Oracle (X$) para monitorar o redo log atual e seu progresso de preenchimento.
+SELECT
+    LE.LENUM "GROUP#",
+    LE.LESEQ "CURRENT LOG SEQUENCE NO",
+    ROUND(100 * CP.CPODR_BNO / (LE.LESIZ - 28770), 2) "PRECENT FULL",
+    CP.CPODR_BNO "CURRENT BLOCK NO",
+    LE.LESIZ * LE.LEBSZ / 1024 / 1024 "SIZE OF LOG IN MB"
+    FROM X$KCCCP CP,
+    X$KCCLE LE
+        WHERE
+            LE.LESEQ = CP.CPODR_SEQ
+            AND
+            BITAND (LE.LEFLG, 24) = 8;
+
+-- Gera um histórico de switches de redo log agrupados por dia e hora, mostrando quantas trocas de log ocorreram em cada período.
+SELECT
+    TO_CHAR(FIRST_TIME, 'YYYY-MM-DD') DAY,
+    TO_CHAR(FIRST_TIME, 'HH24') HOUR,
+    COUNT(*) TOTAL
+    FROM V$LOG_HISTORY
+        GROUP BY TO_CHAR(FIRST_TIME, 'YYYY-MM-DD'),
+        TO_CHAR(FIRST_TIME, 'HH24')
+        ORDER BY TO_CHAR(FIRST_TIME, 'YYYY-MM-DD'),
+        TO_CHAR(FIRST_TIME, 'HH24') ASC;
