@@ -698,3 +698,35 @@ SELECT
         TO_CHAR(FIRST_TIME, 'HH24')
         ORDER BY TO_CHAR(FIRST_TIME, 'YYYY-MM-DD'),
         TO_CHAR(FIRST_TIME, 'HH24') ASC;
+
+-- Lista todos os grupos de redo log da instância, mostrando seu número, sequência atual e status.
+SELECT
+    GROUP#,
+    SEQUENCE#,
+    STATUS
+    FROM V$LOG;
+
+-- Lista todos os grupos de redo log com seus respectivos membros (arquivos físicos) e seus status.
+SELECT 
+    L.GROUP#,
+    L.STATUS AS LOG_STATUS,
+    F.MEMBER,
+    F.STATUS AS MEMBER_STATUS
+    FROM V$LOG L, V$LOGFILE F
+        WHERE L.GROUP# = F.GROUP#
+    ORDER BY L.GROUP#, F.MEMBER;
+
+-- Lista todos os membros (arquivos físicos) de todos os grupos de redo log do banco de dados.
+SELECT
+    GROUP#,
+    MEMBER
+    FROM V$LOGFILE;
+
+-- Lista todos os membros (arquivos físicos) do grupo de redo log atual (CURRENT).
+SELECT
+    MEMBER,
+    L.STATUS
+    FROM V$LOG L, V$LOGFILE F
+        WHERE L.GROUP# = F.GROUP#
+        AND
+        L.STATUS = 'CURRENT';
