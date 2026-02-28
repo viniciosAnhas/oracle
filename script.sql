@@ -730,3 +730,23 @@ SELECT
         WHERE L.GROUP# = F.GROUP#
         AND
         L.STATUS = 'CURRENT';
+
+-- É a ferramenta nativa do Oracle para backup, recuperação e administração de backups.
+rman
+
+-- Comando RMAN para conectar ao banco de dados como usuário SYS com a senha "oracle123".
+CONNECT TARGET sys/oracle123;
+
+-- Exibe todas as configurações atuais do RMAN (políticas de retenção, canais, otimizações, etc.).
+SHOW ALL;
+
+-- Lista todos os arquivos de controle (controlfiles) do banco de dados.
+SELECT
+    NAME
+    FROM V$CONTROLFILE;
+
+--  Faz um backup do arquivo de parâmetros do servidor (SPFILE) da instância atual.
+BACKUP SPFILE;
+
+-- Faz um backup exclusivo do arquivo de controle (controlfile) atual do banco de dados.
+BACKUP CURRENT CONTROLFILE;
