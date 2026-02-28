@@ -750,3 +750,86 @@ BACKUP SPFILE;
 
 -- Faz um backup exclusivo do arquivo de controle (controlfile) atual do banco de dados.
 BACKUP CURRENT CONTROLFILE;
+
+-- Altera o parâmetro CONTROL_FILES no SPFILE para apenas 2 controlfiles (agora com nomes diferentes e corretos).
+ALTER SYSTEM SET CONTROL_FILES='/opt/oracle/oradata/FREE/control02.ctl',
+'/home/oracle/control03.ctl' SCOPE=SPFILE;
+
+-- Inicia a instância Oracle sem montar o banco de dados.
+STARTUP NOMOUNT;
+
+--  Monta o banco de dados, passando da fase NOMOUNT para MOUNT.
+ALTER DATABASE MOUNT;
+
+--  Comando SQL*Plus (não RMAN) que inicia a recuperação do banco de dados aplicando arquivos de redo log necessários.
+RECOVER DATABASE;
+
+-- Abre o banco de dados resetando a sequência de redo logs, criando uma nova "incarnação" do banco.
+ALTER DATABASE OPEN RESETLOGS;
+
+-- Comando RMAN que faz backup completo de todos os datafiles do banco de dados.
+BACKUP DATABASE;
+
+-- Lista todos os datafiles do banco com seus números identificadores, caminhos físicos e tamanhos em MB.
+SELECT 
+    FILE#, 
+    NAME, 
+    BYTES/1024/1024 AS MB 
+    FROM V$DATAFILE;
+
+-- Lista todos os datafiles com informações completas: número, caminho, tablespace associado, tamanho em MB e status.
+SELECT 
+    F.FILE#,
+    F.NAME AS DATAFILE,
+    T.NAME AS TABLESPACE_NAME,
+    F.BYTES/1024/1024 AS SIZE_MB,
+    F.STATUS
+FROM V$DATAFILE F
+JOIN V$TABLESPACE T ON F.TS# = T.TS#
+ORDER BY F.FILE#;
+
+-- Calcula o espaço total alocado por todos os datafiles do banco em gigabytes
+SELECT 
+    SUM(BYTES)/1024/1024/1024 AS TOTAL_GB
+    FROM V$DATAFILE;
+
+-- Lista todos os tablespaces permanentes com o espaço total alocado em GB e MB, ordenados do maior para o menor.
+SELECT 
+    T.NAME AS TABLESPACE_NAME,
+    ROUND(SUM(F.BYTES)/1024/1024/1024, 2) AS GB,
+    ROUND(SUM(F.BYTES)/1024/1024, 2) AS MB
+    FROM V$DATAFILE F
+        JOIN V$TABLESPACE T ON F.TS# = T.TS#
+    GROUP BY T.NAME
+    ORDER BY GB DESC;
+
+-- Esta consulta  calcular espaço alocado vs usado.
+SELECT 
+    T.NAME AS TABLESPACE_NAME,
+    ROUND(SUM(F.BYTES)/1024/1024/1024, 2) AS ALLOCATED_GB,
+    ROUND((SELECT NVL(SUM(BYTES),0) FROM DBA_SEGMENTS S 
+           WHERE S.TABLESPACE_NAME = T.NAME)/1024/1024/1024, 2) AS USED_GB,
+    ROUND(SUM(F.BYTES)/1024/1024/1024 - 
+          (SELECT NVL(SUM(BYTES),0) FROM DBA_SEGMENTS S 
+           WHERE S.TABLESPACE_NAME = T.NAME)/1024/1024/1024, 2) AS FREE_GB
+    FROM V$DATAFILE F
+        JOIN V$TABLESPACE T ON F.TS# = T.TS#
+    GROUP BY T.NAME
+    ORDER BY ALLOCATED_GB DESC;
+
+-- Esta consulta cria um relatório formatado dos tablespaces com alinhamento visual, Tamanhos em GB e MB e Percentual de cada tablespace em relação ao total (RATIO_TO_REPORT)
+SELECT 
+    LPAD(TABLESPACE_NAME, 20) AS TABLESPACE,
+    LPAD(GB, 10) AS GB,
+    LPAD(MB, 10) AS MB,
+    LPAD(TO_CHAR(ROUND(RATIO_TO_REPORT(GB) OVER () * 100, 2), '990.99') || '%', 10) AS PCT_TOTAL
+    FROM (
+        SELECT 
+            T.NAME AS TABLESPACE_NAME,
+            ROUND(SUM(F.BYTES)/1024/1024/1024, 2) AS GB,
+            ROUND(SUM(F.BYTES)/1024/1024, 2) AS MB
+            FROM V$DATAFILE F
+                JOIN V$TABLESPACE T ON F.TS# = T.TS#
+            GROUP BY T.NAME
+    )
+    ORDER BY GB DESC;
