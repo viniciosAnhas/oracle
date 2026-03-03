@@ -833,3 +833,15 @@ SELECT
             GROUP BY T.NAME
     )
     ORDER BY GB DESC;
+
+-- Exibe os parâmetros de inicialização relacionados à Fast Recovery Area (Área de Recuperação Rápida) do Oracle
+SHOW PARAMETER DB_RECOVERY;
+
+-- Exibe o espaço usado e o limite total da Fast Recovery Area (FRA) em gigabytes.
+SELECT
+    SPACE_USED/1024/1024/1024 "SPACE_USED(GB)",
+    SPACE_LIMIT/1024/1024/1024 "SPACE_LIMIT(GB)"
+    FROM V$RECOVERY_FILE_DEST;
+
+-- Redimensiona a Fast Recovery Area (FRA) para 8 gigabytes.
+ALTER SYSTEM SET DB_RECOVERY_FILE_DEST_SIZE = 8G;
