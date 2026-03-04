@@ -862,3 +862,5 @@ BACKUP TABLESPACE SYSAUX;
 -- Exibe todos os backups registrados no catálogo do RMAN (ou controlfile), mostrando informações detalhadas de cada backup realizado.
 LIST BACKUP
 
+-- Faz backup do tablespace SYSAUX e atribui a tag "BACKUP DO SYSAUX" para fácil identificação futura.
+BACKUP TABLESPACE SYSAUX TAG 'BACKUP DO SYSAUX';
