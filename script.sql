@@ -845,3 +845,20 @@ SELECT
 
 -- Redimensiona a Fast Recovery Area (FRA) para 8 gigabytes.
 ALTER SYSTEM SET DB_RECOVERY_FILE_DEST_SIZE = 8G;
+
+-- Exibe informações sobre o arquivo de parâmetros do servidor (SPFILE) em uso pela instância.
+SHOW PARAMETER SPFILE;
+
+-- Configura o tamanho máximo de cada pieceset de backup como ilimitado no RMAN.
+CONFIGURE MAXSIZE TO UNLIMITED;
+
+-- Configura o RMAN para limitar cada piece de backup em 50 MB quando usar canais do tipo DISK.
+CONFIGURE CHANNEL DEVICE 
+TYPE DISK MAXPIECESIZE 50M;
+
+-- Faz backup apenas do tablespace SYSAUX, sem incluir outros tablespaces.
+BACKUP TABLESPACE SYSAUX;
+
+-- Exibe todos os backups registrados no catálogo do RMAN (ou controlfile), mostrando informações detalhadas de cada backup realizado.
+LIST BACKUP
+
