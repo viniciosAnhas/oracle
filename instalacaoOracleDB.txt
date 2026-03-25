@@ -1,1 +1,28 @@
+sudo systemctl stop firewalld
+sudo systemctl disable firewalld
+sudo systemctl status firewalld
 
+reboot
+
+sudo yum update -y
+sudo yum upgrade -y
+yum search preinstall
+
+dnf install oracle-database-preinstall-21c.x86_64
+
+mkdir -p /app/oracle/product/21c/dbhome_1
+
+cut -d: -f1 /etc/passwd
+
+sudo passwd oracle
+
+sudo chown -R oracle:oinstall /app
+
+sudo chmod -R 775 /app
+
+unzip LINUX*.zip
+
+chmod +x /app/oracle/product/21c/dbhome_1/runInstaller
+chown -R oracle:oinstall /app/oracle
+
+./runInstaller
